@@ -16,6 +16,9 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
+    - name: Get repository name
+      run: echo "REPO_NAME=$(basename $GITHUB_REPOSITORY)" >> $GITHUB_ENV
+
     - name: Install Specific Version of Pandoc
       run: |
         sudo apt-get update
@@ -29,10 +32,10 @@ jobs:
         # Add any other fonts you need here
 
     - name: Generate DOCX
-      run: pandoc -s --toc --toc-depth=3 --metadata title="Project" --metadata author="Author" -o Project.docx --reference-doc=template.docx $(cat book-order.txt)
+      run: pandoc -s --toc --toc-depth=3 --metadata title="${{ env.REPO_NAME }}" --metadata author="Author" -o ${{ env.REPO_NAME }}.docx --reference-doc=template.docx $(cat book-order.txt)
 
     - name: Upload DOCX as artifact
       uses: actions/upload-artifact@v4
       with:
-        name: Project.docx
-        path: Project.docx
+        name: ${{ env.REPO_NAME }}.docx
+        path: ${{ env.REPO_NAME }}.docx
